@@ -27,6 +27,12 @@ flags=("$KAFKA_CONF_FILE")
 [[ -z "${KAFKA_EXTRA_FLAGS:-}" ]] || flags=("${flags[@]}" "${KAFKA_EXTRA_FLAGS[@]}")
 START_COMMAND=("$KAFKA_HOME/bin/kafka-server-start.sh" "${flags[@]}" "$@")
 
+# just append the additional server values
+if [[ -f "${KAFKA_CONF_DIR}/additional.server.properties" ]]; then
+    echo -e "\n\n" >> ${KAFKA_CONF_DIR}/server.properties
+    cat ${KAFKA_CONF_DIR}/additional.server.properties >> ${KAFKA_CONF_DIR}/server.properties
+fi
+
 info "** Starting Kafka **"
 if am_i_root; then
     exec gosu "$KAFKA_DAEMON_USER" "${START_COMMAND[@]}"
